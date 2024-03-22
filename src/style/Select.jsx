@@ -5,7 +5,7 @@ import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 
-export default function SelectCategory() {
+export default function SelectPeriod() {
   return (
     <Box sx={{ minWidth: 120 }}>
       <FormControl fullWidth>

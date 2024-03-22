@@ -5,16 +5,27 @@ import Typography from "@mui/material/Typography";
 import Modal from "@mui/material/Modal";
 import HabitsPreset from "@/elements/HabitsPreset";
 import styles from "@/elements/modal/modal.module.css";
-import SelectCategory from "@/style/Select";
-import TitleField from "@/style/TitleField";
 import { db } from "@/services/firebase";
-import { collection } from "firebase/firestore";
+import { collection, doc, addDoc } from "firebase/firestore";
+import { AuthContext } from "@/provider/AuthProvider";
 
 export default function BasicModal() {
+  const { user } = AuthContext();
+
+  const usersCollection = collection(db, "users");
+  const userDoc = doc(usersCollection, user.user.uid);
+  const habitsCollection = collection(db, "habits");
+
   const [open, setOpen] = useState(false);
   const [ModalTrueFalseOpen, setModalTrueFalseOpen] = useState(false);
   const [ModalCountOpen, setModalCountOpen] = useState(false);
   const [ModalPopularOpen, setModalPopularOpen] = useState(false);
+  const [habitData, setHabitData] = useState({
+    title: "",
+    category: "",
+    period: "",
+    targetValue: null,
+  });
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -34,15 +45,25 @@ export default function BasicModal() {
   };
   const handleModalPopularClose = () => setModalPopularOpen(false);
 
-
-
-    const data = ["Привычка 1", "Привычка 2", "Привычка 3"];
-
-    const Push = () => {
-      db.ref("habits").set({
-          data: data
-      }).catch(alert);
-  }
+  const addTrueFalseHabit = async () => {
+    await addDoc(
+      habitsCollection,
+      {
+        addDate: new Date(),
+        title: habitData.title,
+        category: habitData.category,
+        period: habitData.period,
+        targetValue: habitData.targetValue,
+        actions: [
+          {
+            date: new Date(),
+            progress: 0,
+            user: userDoc
+          }
+        ]
+      }
+    );
+  };
   
   return (
     <div>
@@ -58,15 +79,7 @@ export default function BasicModal() {
             style={{ width: "100%" }}
             onClick={handleModalTrueFalseOpen}
           >
-            Да / Нет
-          </Button>
-          <br />
-          <Button
-            variant="outlined"
-            style={{ width: "100%" }}
-            onClick={handleModalCountOpen}
-          >
-            Количественные
+            Своя привычка
           </Button>
           <br />
           <Button
@@ -80,7 +93,6 @@ export default function BasicModal() {
     <Button
             variant="outlined"
             style={{ width: "100%" }}
-            onClick={Push}
           >
             Тестовые привычки от автора
           </Button>      
@@ -96,18 +108,44 @@ export default function BasicModal() {
       </Modal>
       <Modal open={ModalTrueFalseOpen} onClose={handleModalTrueFalseClose}>
         <Box className={styles.box}>
-          <TitleField label="Название" />
-          <SelectCategory />
-          <Button variant="contained">Добавить привычку</Button>
-        </Box>
-      </Modal>
-
-      <Modal open={ModalCountOpen} onClose={handleModalCountClose}>
-        <Box className={styles.box}>
-          <TitleField label="Название" />
-          <TitleField label="Цель" type="number" />
-          <SelectCategory />
-          <Button variant="contained">Добавить привычку</Button>
+          <input
+            onChange={(event) =>
+              setHabitData((prevState) => ({
+                ...prevState,
+                title: event.target.value,
+              }))
+            }
+          />
+          <br/>
+          <input
+            onChange={(event) =>
+              setHabitData((prevState) => ({
+                ...prevState,
+                category: event.target.value,
+              }))
+            }
+          />
+          <br/>
+          <input
+            onChange={(event) =>
+              setHabitData((prevState) => ({
+                ...prevState,
+                period: event.target.value,
+              }))
+            }
+          />
+          <br/>
+          <input
+            placeholder="По желанию добавьте цель"
+            onChange={(event) =>
+              setHabitData((prevState) => ({
+                ...prevState,
+                targetValue: parseInt(event.target.value),
+              }))
+            }
+          />
+          <br/>
+          <Button variant="contained" onClick={addTrueFalseHabit}>Добавить привычку</Button>
         </Box>
       </Modal>
       <Modal open={ModalPopularOpen} onClose={handleModalPopularClose}>

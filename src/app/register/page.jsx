@@ -44,6 +44,7 @@ const Register = () => {
         maxGroup: 5,
         maraphones: [],
         groups: [],
+        habits: [],
       });
 
       reset();

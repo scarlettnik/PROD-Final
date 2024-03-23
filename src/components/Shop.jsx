@@ -4,7 +4,6 @@ import { db } from "@/services/firebase";
 import { collection, onSnapshot, query } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import styles from '@/ui/shop.module.css'
-import { Button } from "@mui/material";
 
 export default function Shop() {
 
@@ -27,13 +26,19 @@ export default function Shop() {
   return (<>
    <div>Shop</div>
    <div className={styles.cardList}>
-   {products?.map((product) => (
-    <div className={styles.card} key={product?.id}>
-      {product?.title}
-      <button className={styles.buyButton}>Купить за {product?.cost}</button>
+   <div className={styles.card}>
+      Увеличение максимального количества групп на 3
+      <button className={styles.buyButton}>Купить за 3</button>
     </div>
-  ))}
-   </div>
+    <div className={styles.card}>
+    Увеличение максимального количества привычек на 3
+      <button className={styles.buyButton}>Купить за 5</button>
+    </div>
+    <div className={styles.card}>
+      Изменение стилей на главном экране
+      <button className={styles.buyButton}>Купить за 7</button>
+    </div>
+    </div>
    </>
    
   )

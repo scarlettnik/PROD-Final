@@ -13,12 +13,11 @@ export default function BasicModal() {
   const { user } = AuthContext();
 
   const usersCollection = collection(db, "users");
-  const userDoc = doc(usersCollection, user.user.uid);
+  const userDoc = doc(usersCollection, user?.user?.uid);
   const habitsCollection = collection(db, "habits");
 
   const [open, setOpen] = useState(false);
   const [ModalTrueFalseOpen, setModalTrueFalseOpen] = useState(false);
-  const [ModalCountOpen, setModalCountOpen] = useState(false);
   const [ModalPopularOpen, setModalPopularOpen] = useState(false);
   const [habitData, setHabitData] = useState({
     title: "",
@@ -34,11 +33,6 @@ export default function BasicModal() {
     setModalTrueFalseOpen(true);
   };
   const handleModalTrueFalseClose = () => setModalTrueFalseOpen(false);
-  const handleModalCountOpen = () => {
-    setOpen(false);
-    setModalCountOpen(true);
-  };
-  const handleModalCountClose = () => setModalCountOpen(false);
   const handleModalPopularOpen = () => {
     setOpen(false);
     setModalPopularOpen(true);
@@ -46,25 +40,23 @@ export default function BasicModal() {
   const handleModalPopularClose = () => setModalPopularOpen(false);
 
   const addTrueFalseHabit = async () => {
-    await addDoc(
-      habitsCollection,
-      {
-        addDate: new Date(),
-        title: habitData.title,
-        category: habitData.category,
-        period: habitData.period,
-        targetValue: habitData.targetValue,
-        actions: [
-          {
-            date: new Date(),
-            progress: 0,
-            user: userDoc
-          }
-        ]
-      }
-    );
+    await addDoc(habitsCollection, {
+      user: user.user.uid, 
+      addDate: new Date(),
+      title: habitData.title,
+      category: habitData.category,
+      period: habitData.period,
+      targetValue: habitData.targetValue,
+      actions: [
+        {
+          date: new Date(),
+          progress: 0,
+          user: userDoc,
+        },
+      ],
+    });
   };
-  
+
   return (
     <div>
       <Button onClick={handleOpen}>Добавить</Button>
@@ -90,12 +82,9 @@ export default function BasicModal() {
             Популярные
           </Button>
           <br />
-    <Button
-            variant="outlined"
-            style={{ width: "100%" }}
-          >
+          <Button variant="outlined" style={{ width: "100%" }}>
             Тестовые привычки от автора
-          </Button>      
+          </Button>
           <br />
           <Button
             variant="outlined"
@@ -116,7 +105,7 @@ export default function BasicModal() {
               }))
             }
           />
-          <br/>
+          <br />
           <input
             onChange={(event) =>
               setHabitData((prevState) => ({
@@ -125,7 +114,7 @@ export default function BasicModal() {
               }))
             }
           />
-          <br/>
+          <br />
           <input
             onChange={(event) =>
               setHabitData((prevState) => ({
@@ -134,7 +123,7 @@ export default function BasicModal() {
               }))
             }
           />
-          <br/>
+          <br />
           <input
             placeholder="По желанию добавьте цель"
             onChange={(event) =>
@@ -144,8 +133,10 @@ export default function BasicModal() {
               }))
             }
           />
-          <br/>
-          <Button variant="contained" onClick={addTrueFalseHabit}>Добавить привычку</Button>
+          <br />
+          <Button variant="contained" onClick={addTrueFalseHabit}>
+            Добавить привычку
+          </Button>
         </Box>
       </Modal>
       <Modal open={ModalPopularOpen} onClose={handleModalPopularClose}>

@@ -31,7 +31,8 @@
   }
   .card {
     font-size: medium;
-    padding: 1em;
+    padding: 0.5em;
+    align-items: center;
   }
   .buyButton {
     font-size: 1em;

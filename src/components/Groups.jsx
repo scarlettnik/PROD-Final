@@ -14,7 +14,6 @@ export default function Groups() {
 
   const [groupToAddId, setGroupToAddId] = useState("");
 
-
   const addToGroup = async () => {
     const groupDocReference = doc(groupsCollection, groupToAddId)
     const groupDoc = await getDoc(groupDocReference)
@@ -35,10 +34,9 @@ export default function Groups() {
       groupsCollection, where("users", "array-contains", doc(usersCollection, user.user.uid))
     );
     const groupHabits = [];
-    
 
     onSnapshot(userGroupsQuery, (userGroups) => {
-      console.log(userGroups.docs[0].data().habits.getReference('/groups'));
+      console.log(userGroups.docs[1].data());
       userGroups.docs.forEach((groupDoc) => {
         groupDoc.data().habits.forEach((habit) => {groupHabits.push(habit)});
       });

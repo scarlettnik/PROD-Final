@@ -4,7 +4,7 @@ import { UserContext } from "@/provider/UserProvider";
 import { Button, Modal, Box } from "@mui/material";
 import styles from '@/ui/modal.module.css'
 import { addDoc, collection } from "firebase/firestore";
-import { db } from "@/services/firebase";
+import { askForPermissionToReceiveNotifications, db } from "@/services/firebase";
 import { AuthContext } from "@/provider/AuthProvider";
 
 const Maraphones = () => {
@@ -80,6 +80,9 @@ const Maraphones = () => {
         <Button variant="contained" onClick={addTrueFalseHabit}>
           Добавить привычку
         </Button>
+        <button onClick={askForPermissionToReceiveNotifications} >
+          Click to receive notifications
+        </button>
       </Box>
     </Modal>
     <Button onClick={handleOpen}>Добавить марафон</Button>

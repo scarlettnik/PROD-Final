@@ -47,7 +47,7 @@ export default function AddHabit() {
         {
           date: new Date(),
           progress: 0,
-          user: userDoc,
+          user: user?.user?.uid,
         },
       ],
     });

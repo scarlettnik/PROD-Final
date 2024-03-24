@@ -11,6 +11,7 @@ import {
 } from "firebase/firestore";
 import { db } from "@/services/firebase";
 import { AuthContext } from "@/provider/AuthProvider";
+import Loader from "@/elements/Loader";
 
 export default function Groups() {
   const { user } = AuthContext();
@@ -20,6 +21,7 @@ export default function Groups() {
 
   const [groupToAddId, setGroupToAddId] = useState("");
   const [groupHabits, setGroupHabits] = useState([]);
+  const [isLoaded, setIsLoaded] = useState(false);
 
   const addToGroup = async () => {
     const groupDocReference = doc(groupsCollection, groupToAddId);
@@ -31,52 +33,57 @@ export default function Groups() {
     }
 
     const groupUsers = groupDoc.data().users;
+    const currentUser = doc(usersCollection, user.user.uid);
 
-    groupUsers.push(doc(usersCollection, user.user.uid));
+    if (!groupUsers.includes(currentUser))
+      groupUsers.push(currentUser);
     await updateDoc(groupDocReference, { users: groupUsers });
   };
 
-  useEffect(() => {
+  useEffect( () => {
     const userGroupsQuery = query(
-      groupsCollection,
-      where("users", "array-contains", doc(usersCollection, user.user.uid))
+      groupsCollection, where("users", "array-contains", doc(usersCollection, user.user.uid))
     );
 
-    const unsubscribe = onSnapshot(userGroupsQuery, (userGroups) => {
-      const habits = [];
-
-      userGroups.docs.forEach(async (groupDoc) => {
+    onSnapshot(userGroupsQuery, (userGroups) => {
+      userGroups.docs.forEach((groupDoc) => {
         const groupData = groupDoc.data();
-        const habitRefs = groupData.habits;
-        console.log(habitRefs);
-        const habitPromises = habitRefs.map((habitRef) => {
-          const habitSnap = getDoc(habitRef);
 
-          const habitData = habitSnap.data();
+        groupData.habits.forEach(async (habitDocReference) => {
+          const groupHabitsCopy = groupHabits;
 
-          return habitData;
+          const currentHabitData = {
+            "group": groupData,
+            "habit": (await getDoc(habitDocReference)).data(),
+          };
+          if (
+            !groupHabitsCopy
+              .map((item) => { [item["group"], item["habit"]] })
+              .includes([currentHabitData["group"], currentHabitData["habit"]])
+          )
+            groupHabitsCopy.push(currentHabitData);
+          setGroupHabits(groupHabitsCopy);
+
+          setIsLoaded(false);
+          setIsLoaded(true);
         });
-
-        const habitData = await Promise.all(habitPromises);
-
-        habits.push(...habitData);
       });
-
-      setGroupHabits(habits);
     });
-
-    return () => {
-      unsubscribe();
-    };
   }, []);
 
   return (
     <>
-      <div className="groupHabits">
-        {groupHabits.map((habitDoc) => (
-          <a href={habitDoc.url}>{habitDoc.name}</a>
-        ))}
-      </div>
+      {
+        isLoaded ? (
+          <div className="groupHabits" key="groupHabits">
+            {
+              groupHabits.map((item, index) => (
+                <p key={item["habit"]._key + index.toString()}>{item["group"].title}: {item["habit"].title}</p>
+              ))
+            }
+          </div>
+        ) : <Loader/>
+      }
       <input onChange={(event) => setGroupToAddId(event.target.value)} />
       <Button onClick={addToGroup}>Добавиться в группу</Button>
     </>

@@ -36,7 +36,7 @@ const HabitsOwn = () => {
 
       const newHabitData = {};
       newHabits.forEach((habit) => {
-        if (habit.user === user.user.uid && habit.days) {
+        if (habit.user === user?.user?.uid && habit.days) {
           newHabitData[habit.id] = {
             days: habit.days,
             input: "",
@@ -104,7 +104,7 @@ const HabitsOwn = () => {
           <tbody>
             {sortedCategories.map((category) => {
               const shouldDisplayCategory = groupedHabits[category]?.some(
-                (habit) => habit.user === user.user.uid
+                (habit) => habit.user === user?.user?.uid
               );
 
               return (
@@ -117,7 +117,7 @@ const HabitsOwn = () => {
                         </th>
                       </tr>
                       {groupedHabits[category].map((habit) => {
-                        if (habit.user === user.user.uid) {
+                        if (habit.user === user?.user?.uid) {
                           const habitId = habit.id;
                           const habitCheckboxValues =
                             habitData[habitId]?.days || {};

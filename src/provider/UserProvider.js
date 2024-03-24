@@ -11,7 +11,7 @@ const UserProvider = ({ children }) => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       if (user) {
         const usersCollection = collection(db, "users");
-        const userQuery = query(usersCollection, where("uid", "==", user.uid));
+        const userQuery = query(usersCollection, where("uid", "==", user?.uid));
         const subscribe = onSnapshot(userQuery, (querySnapshot) => {
           setUserData(
             querySnapshot.docs.map((doc) => ({

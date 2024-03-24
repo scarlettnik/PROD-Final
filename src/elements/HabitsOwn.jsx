@@ -1,27 +1,27 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { Checkbox } from "@mui/material";
 import { Check, CheckCheck } from "lucide-react";
 import { AuthContext } from "@/provider/AuthProvider";
 import styles from "@/ui/tracker.module.css";
 import { collection, getDocs, query } from "firebase/firestore";
 import { db } from "@/services/firebase";
+import { useCookies } from "react-cookie";
 
 const HabitsOwn = () => {
   const { user } = AuthContext();
   const [habits, setHabits] = useState([]);
   const [habitData, setHabitData] = useState({});
   const currentDate = new Date();
-  const daysOfWeek = ["Вс", "Пн", "Вт", "Ср", "Чт", "Пт", "Сб"];
+  const [cookies, setCookie] = useCookies(["habitData"]);
 
   useEffect(() => {
-    const storedHabitData = JSON.parse(localStorage.getItem("habitData")) || {};
+    const storedHabitData = cookies.habitData || {};
     setHabitData(storedHabitData);
   }, []);
-  console.log(habitData);
 
   useEffect(() => {
-    localStorage.setItem("habitData", JSON.stringify(habitData));
-  }, [habitData]);
+    setCookie("habitData", habitData);
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -50,9 +50,9 @@ const HabitsOwn = () => {
     };
 
     fetchData();
-  }, []);
+  }, [user]);
 
-  const onChangeCheckbox = (habitId, day, value) => {
+  const onChangeCheckbox = useCallback((habitId, day, value) => {
     setHabitData((prevData) => ({
       ...prevData,
       [habitId]: {
@@ -63,7 +63,7 @@ const HabitsOwn = () => {
         },
       },
     }));
-  };
+  }, []);
 
   const groupedHabits = habits.reduce((acc, habit) => {
     const { category } = habit;
@@ -90,33 +90,38 @@ const HabitsOwn = () => {
           <thead className={styles.thead}>
             <tr>
               <th></th>
-              {daysOfWeek.map((day, index) => {
+              {Array.from({ length: 7 }).map((_, index) => {
                 const date = new Date(currentDate.getTime());
                 date.setDate(currentDate.getDate() + index);
+                const formattedDate = date.toLocaleDateString("ru-RU", {
+                  weekday: "short",
+                  day: "numeric",
+                  month: "short",
+                });
                 return (
-                  <th className={styles.date} key={day}>
-                    {date.getDate()}
+                  <th className={styles.date} key={formattedDate}>
+                    {formattedDate}
                   </th>
                 );
               })}
             </tr>
           </thead>
           <tbody>
-            {sortedCategories.map((category) => {
-              const shouldDisplayCategory = groupedHabits[category]?.some(
+            {sortedCategories.map((targetValue) => {
+              const shouldDisplaytargetValue = groupedHabits[targetValue]?.some(
                 (habit) => habit.user === user?.user?.uid
               );
 
               return (
-                <React.Fragment key={category}>
-                  {shouldDisplayCategory && (
+                <React.Fragment key={targetValue}>
+                  {shouldDisplaytargetValue && (
                     <>
                       <tr>
                         <th className={styles.category} colSpan={8}>
-                          {periodLabels[category]}
+                          {periodLabels[targetValue]}
                         </th>
                       </tr>
-                      {groupedHabits[category].map((habit) => {
+                      {groupedHabits[targetValue].map((habit) => {
                         if (habit.user === user?.user?.uid) {
                           const habitId = habit.id;
                           const habitCheckboxValues =
@@ -125,13 +130,16 @@ const HabitsOwn = () => {
                           return (
                             <tr className={styles.calendar} key={habitId}>
                               <td className={styles.selector}>{habit.title}</td>
-                              {daysOfWeek.map((day, index) => {
+                              {Array.from({ length: 7 }).map((_, index) => {
+                               
                                 const checkboxValue =
-                                  habitCheckboxValues[index] || "";
+                                habitCheckboxValues[index] || "";
+  
+
 
                                 if (habit.targetValue) {
                                   return (
-                                    <td className={styles.checkbox} key={day}>
+                                    <td className={styles.checkbox} key={index}>
                                       <input
                                         className={styles.inputNumber}
                                         type="number"
@@ -148,7 +156,7 @@ const HabitsOwn = () => {
                                   );
                                 } else {
                                   return (
-                                    <td className={styles.checkbox} key={day}>
+                                    <td className={styles.checkbox} key={index}>
                                       <Checkbox
                                         icon={
                                           <Check

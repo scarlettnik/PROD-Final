@@ -4,12 +4,12 @@ import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import Modal from "@mui/material/Modal";
 import HabitsPreset from "@/elements/HabitsPreset";
-import styles from "@/elements/modal/modal.module.css";
+import styles from "@/ui/modal.module.css";
 import { db } from "@/services/firebase";
 import { collection, doc, addDoc } from "firebase/firestore";
 import { AuthContext } from "@/provider/AuthProvider";
 
-export default function BasicModal() {
+export default function AddHabit() {
   const { user } = AuthContext();
 
   const usersCollection = collection(db, "users");

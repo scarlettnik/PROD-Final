@@ -1,9 +1,9 @@
+import AddHabit from "@/elements/AddHabit";
 import HabitsOwn from "@/elements/HabitsOwn";
-import Modal from "@/elements/modal/Modal";
 export default function HabitTracker() {
   return (
     <>
-      <Modal />
+      <AddHabit />
       <HabitsOwn />
     </>
   );

@@ -1,25 +1,88 @@
 'use client'
-import React, { useContext } from "react";
+import React, { useState } from "react";
 import { UserContext } from "@/provider/UserProvider";
+import { Button, Modal, Box } from "@mui/material";
+import styles from '@/ui/modal.module.css'
+import { addDoc, collection } from "firebase/firestore";
+import { db } from "@/services/firebase";
+import { AuthContext } from "@/provider/AuthProvider";
 
 const Maraphones = () => {
-  const userData = useContext(UserContext);
-  console.log(userData)
+  const {user} = AuthContext()
+  const maraphonesCollection = collection(db, "maraphones");
+  const [open, setOpen] = useState(false);
+  const [habitData, setHabitData] = useState({
+    title: "",
+    category: "",
+    period: "",
+    targetValue: null,
+  });
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
+  const addTrueFalseHabit = async () => {
+    await addDoc(maraphonesCollection, {
+      creator: user.user.uid, 
+      addDate: new Date(),
+      title: habitData.title,
+      category: habitData.category,
+      period: habitData.period,
+      targetValue: habitData.targetValue,
+      actions: [
+        {
+          date: new Date(),
+          progress: 0,
+          user: user.user.uid,
+        },
+      ],
+    });
+  };
   return (
     <div>
-    {userData ? (
-      <div>
-        {userData.map((user) => (
-          <div key={user?.id}>
-            {user?.email}
-            <p>{user?.level}</p>
-            <p>{user?.wallet}</p>
-          </div>
-        ))}
-      </div>
-    ) : (
-      <p>No user data available</p>
-    )}
+    <Modal open={open} onClose={handleClose}>
+    <Box className={styles.box}>
+          <input
+            onChange={(event) =>
+              setHabitData((prevState) => ({
+                ...prevState,
+                title: event.target.value,
+              }))
+            }
+          />
+          <br />
+          <input
+            onChange={(event) =>
+              setHabitData((prevState) => ({
+                ...prevState,
+                category: event.target.value,
+              }))
+            }
+          />
+          <br />
+          <input
+            onChange={(event) =>
+              setHabitData((prevState) => ({
+                ...prevState,
+                period: event.target.value,
+              }))
+            }
+          />
+          <br />
+          <input
+            placeholder="По желанию добавьте цель"
+            onChange={(event) =>
+              setHabitData((prevState) => ({
+                ...prevState,
+                targetValue: parseInt(event.target.value),
+              }))
+            }
+          />
+          <br />
+          <Button variant="contained" onClick={addTrueFalseHabit}>
+            Добавить привычку
+          </Button>
+        </Box>
+    </Modal>
+    <Button onClick={handleOpen}>Добавить марафон</Button>
   </div>
   );
 };

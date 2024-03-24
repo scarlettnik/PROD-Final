@@ -29,11 +29,11 @@ export default function Shop() {
   const updateMaxHabbit = async () => {
     const userDoc = await getDoc(userDocReference);
     const userData = userDoc.data();
-    const newMaxHabbit = userData.maxHabbit + 5;
+    const newMaxHabit = userData.maxHabit + 5;
     const newWallet = userData.wallet - 3;
     await updateDoc(userDocReference, {
       ...userData,
-      maxHabit: newMaxHabbit,
+      maxHabit: newMaxHabit,
       wallet: newWallet,
     });
 

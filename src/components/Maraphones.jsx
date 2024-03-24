@@ -39,48 +39,48 @@ const Maraphones = () => {
   return (
     <div>
     <Modal open={open} onClose={handleClose}>
-    <Box className={styles.box}>
-          <input
-            onChange={(event) =>
-              setHabitData((prevState) => ({
-                ...prevState,
-                title: event.target.value,
-              }))
-            }
-          />
-          <br />
-          <input
-            onChange={(event) =>
-              setHabitData((prevState) => ({
-                ...prevState,
-                category: event.target.value,
-              }))
-            }
-          />
-          <br />
-          <input
-            onChange={(event) =>
-              setHabitData((prevState) => ({
-                ...prevState,
-                period: event.target.value,
-              }))
-            }
-          />
-          <br />
-          <input
-            placeholder="По желанию добавьте цель"
-            onChange={(event) =>
-              setHabitData((prevState) => ({
-                ...prevState,
-                targetValue: parseInt(event.target.value),
-              }))
-            }
-          />
-          <br />
-          <Button variant="contained" onClick={addTrueFalseHabit}>
-            Добавить привычку
-          </Button>
-        </Box>
+      <Box className={styles.box}>
+        <input
+          onChange={(event) =>
+            setHabitData((prevState) => ({
+              ...prevState,
+              title: event.target.value,
+            }))
+          }
+        />
+        <br />
+        <input
+          onChange={(event) =>
+            setHabitData((prevState) => ({
+              ...prevState,
+              category: event.target.value,
+            }))
+          }
+        />
+        <br />
+        <input
+          onChange={(event) =>
+            setHabitData((prevState) => ({
+              ...prevState,
+              period: event.target.value,
+            }))
+          }
+        />
+        <br />
+        <input
+          placeholder="По желанию добавьте цель"
+          onChange={(event) =>
+            setHabitData((prevState) => ({
+              ...prevState,
+              targetValue: parseInt(event.target.value),
+            }))
+          }
+        />
+        <br />
+        <Button variant="contained" onClick={addTrueFalseHabit}>
+          Добавить привычку
+        </Button>
+      </Box>
     </Modal>
     <Button onClick={handleOpen}>Добавить марафон</Button>
   </div>

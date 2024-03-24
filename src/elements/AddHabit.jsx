@@ -121,6 +121,7 @@ export default function AddHabit() {
           />
           <br />
           <input
+            type="number"
             placeholder="По желанию добавьте цель"
             onChange={(event) =>
               setHabitData((prevState) => ({

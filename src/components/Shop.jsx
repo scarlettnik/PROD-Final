@@ -10,8 +10,8 @@ import { useContext } from "react";
 export default function Shop() {
   const { user } = AuthContext();
   const currentUser = useContext(UserContext);
-  const userDocReference = doc(db, "users", user.user.uid);
-  const wallet = currentUser[0].wallet
+  const userDocReference = doc(db, "users", user?.user?.uid);
+  const wallet = currentUser[0]?.wallet
   const updateMaxGroup = async () => {
     const userDoc = await getDoc(userDocReference);
     const userData = userDoc.data();
@@ -83,9 +83,9 @@ export default function Shop() {
           <button
             onClick={addTheme}
             className={styles.buyButton}
-            disabled={wallet - 5 <= 0 || currentUser[0].customTheme}
+            disabled={wallet - 5 <= 0 || currentUser[0]?.customTheme}
           >
-            {currentUser[0].customTheme ? "Уже куплено" : wallet - 5 > 0 ? "Купить за 5" : "Недостаточно средств"}
+            {currentUser[0]?.customTheme ? "Уже куплено" : wallet - 5 > 0 ? "Купить за 5" : "Недостаточно средств"}
           </button>
         </div>
       </div>

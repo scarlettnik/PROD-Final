@@ -40,35 +40,43 @@ export default function Groups() {
     await updateDoc(groupDocReference, { users: groupUsers });
   };
 
-  useEffect( () => {
+  useEffect(() => {
     const userGroupsQuery = query(
-      groupsCollection, where("users", "array-contains", doc(usersCollection, user.user.uid))
+      groupsCollection,
+      where("users", "array-contains", doc(usersCollection, user?.user?.uid))
     );
-
-    onSnapshot(userGroupsQuery, (userGroups) => {
-      userGroups.docs.forEach((groupDoc) => {
+  
+    const unsubscribe = onSnapshot(userGroupsQuery, async (userGroups) => {
+      const updatedGroupHabits = [];
+  
+      for (const groupDoc of userGroups.docs) {
         const groupData = groupDoc.data();
-
-        groupData.habits.forEach(async (habitDocReference) => {
-          const groupHabitsCopy = groupHabits;
-
+  
+        for (const habitDocReference of groupData.habits) {
           const currentHabitData = {
-            "group": groupData,
-            "habit": (await getDoc(habitDocReference)).data(),
+            group: groupData,
+            habit: (await getDoc(habitDocReference)).data(),
           };
+  
           if (
-            !groupHabitsCopy
-              .map((item) => { [item["group"], item["habit"]] })
-              .includes([currentHabitData["group"], currentHabitData["habit"]])
-          )
-            groupHabitsCopy.push(currentHabitData);
-          setGroupHabits(groupHabitsCopy);
-
-          setIsLoaded(false);
-          setIsLoaded(true);
-        });
-      });
+            !updatedGroupHabits.some(
+              (item) =>
+                item.group === currentHabitData.group &&
+                item.habit === currentHabitData.habit
+            )
+          ) {
+            updatedGroupHabits.push(currentHabitData);
+          }
+        }
+      }
+  
+      setGroupHabits(updatedGroupHabits);
+      setIsLoaded(true);
     });
+  
+    return () => {
+      unsubscribe();
+    };
   }, []);
 
   return (

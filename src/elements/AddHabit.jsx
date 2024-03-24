@@ -11,10 +11,6 @@ import { AuthContext } from "@/provider/AuthProvider";
 
 export default function AddHabit() {
   const { user } = AuthContext();
-  if (user?.user?.uid) {
-    const usersCollection = collection(db, "users");
-    const userDoc = doc(usersCollection, user?.user?.uid);
-  }
   const habitsCollection = collection(db, "habits");
   const [open, setOpen] = useState(false);
   const [ModalTrueFalseOpen, setModalTrueFalseOpen] = useState(false);

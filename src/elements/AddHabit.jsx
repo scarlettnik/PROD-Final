@@ -11,11 +11,11 @@ import { AuthContext } from "@/provider/AuthProvider";
 
 export default function AddHabit() {
   const { user } = AuthContext();
-
-  const usersCollection = collection(db, "users");
-  const userDoc = doc(usersCollection, user?.user?.uid);
+  if (user?.user?.uid) {
+    const usersCollection = collection(db, "users");
+    const userDoc = doc(usersCollection, user?.user?.uid);
+  }
   const habitsCollection = collection(db, "habits");
-
   const [open, setOpen] = useState(false);
   const [ModalTrueFalseOpen, setModalTrueFalseOpen] = useState(false);
   const [ModalPopularOpen, setModalPopularOpen] = useState(false);
@@ -41,7 +41,7 @@ export default function AddHabit() {
 
   const addTrueFalseHabit = async () => {
     await addDoc(habitsCollection, {
-      user: user.user.uid, 
+      user: user.user.uid,
       addDate: new Date(),
       title: habitData.title,
       category: habitData.category,
